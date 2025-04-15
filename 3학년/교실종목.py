@@ -11,19 +11,22 @@ BASE_SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "s
 def load_base_settings():
     config = configparser.ConfigParser()
     try:
-        config.read(BASE_SETTINGS_PATH, encoding="utf-8")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        settings_path = os.path.join(base_dir, "setting.ini")
+        config.read(settings_path, encoding="utf-8")
+
         class_count = int(config.get("기본설정", "class"))
-        path = config.get("기본설정", "PATH")
-        path = path.rstrip("/\\")
-        path = os.path.join(path, "설정", "교실.ini")
+
+        ini_path = os.path.join(base_dir, "설정", "교실.ini")
+
+        if not os.path.exists(ini_path):
+            raise FileNotFoundError(f"설정 경로가 존재하지 않습니다: {ini_path}")
         
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"설정 경로가 존재하지 않습니다: {path}")
-        
-        return class_count, path
+        return class_count, ini_path
     except Exception as e:
         messagebox.showerror("오류", f"설정 파일을 불러오는 중 문제가 발생했습니다.\n{str(e)}")
         exit()
+
 
 def load_event_settings(path):
     config = configparser.ConfigParser()
@@ -113,7 +116,7 @@ def save_results(results):
     for col in ws.columns:
         max_length = max(len(str(cell.value)) for cell in col)
         col_letter = get_column_letter(col[0].column)
-        ws.column_dimensions[col_letter].width = max_length + 8  # 기존보다 넓게 설정
+        ws.column_dimensions[col_letter].width = max_length + 8
 
     wb.save(RESULTS_PATH)
     messagebox.showinfo("완료", "점수 계산이 완료되었습니다!")
