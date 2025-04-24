@@ -46,7 +46,7 @@ pip --version
 :end
 echo Python installation and setup completed.
 
-if "%REPEAT%"=="" (
+if "%REPEAT%"=="1" (
     set REPEAT=1
     echo Restarting the batch file completely...
     start "" "%~f0"
